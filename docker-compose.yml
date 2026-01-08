@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: gne-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: gne
+      POSTGRES_USER: gne
+      POSTGRES_PASSWORD: gne
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
