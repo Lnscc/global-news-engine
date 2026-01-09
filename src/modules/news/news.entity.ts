@@ -31,7 +31,10 @@ export class NewsEntity {
     srid: 4326,
     nullable: true,
   })
-  location?: string;
+  location?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
 
   @Column({ nullable: true })
   country?: string;
@@ -55,9 +58,9 @@ export class NewsEntity {
   sentiment?: number;
 
   @Index()
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', name: 'published_at' })
   publishedAt: Date;
 
-  @Column({ type: 'timestamptz', default: () => 'NOW()' })
+  @Column({ type: 'timestamptz', name: 'created_at', default: () => 'NOW()' })
   createdAt: Date;
 }
