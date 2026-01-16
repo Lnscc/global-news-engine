@@ -35,7 +35,7 @@ export class GptLocationExtractor {
     if (!raw) return [];
 
     try {
-      const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(raw) as { locations?: ExtractedLocation[] };
       return parsed.locations ?? [];
     } catch {
       return [];

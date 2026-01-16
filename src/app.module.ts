@@ -5,6 +5,7 @@ import { HealthModule } from './modules/health/health.module';
 import { NewsModule } from './modules/news/news.module';
 import { IngestModule } from './modules/ingest/ingest.module';
 import { EnrichModule } from './modules/enrich/enrich.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EnrichModule } from './modules/enrich/enrich.module';
         synchronize: true,
       }),
     }),
+    HttpModule,
     HealthModule,
     NewsModule,
     IngestModule,

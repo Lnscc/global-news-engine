@@ -26,7 +26,7 @@ export class IngestService {
 
       await this.newsRepo.save({
         title: item.title,
-        description: item.seendate,
+        description: '',
         source: 'gdelt',
         url: item.url,
         publishedAt: DateTime.fromISO(item.seendate, {

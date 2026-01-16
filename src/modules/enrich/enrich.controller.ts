@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { EnrichService } from './enrich.service';
 
-@Controller('enrichment')
+@Controller('enrich')
 export class EnrichController {
   constructor(private readonly enrich: EnrichService) {}
 
