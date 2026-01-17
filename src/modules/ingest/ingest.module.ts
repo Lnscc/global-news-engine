@@ -7,5 +7,6 @@ import { GdeltService } from './sources/gdelt.service';
 @Module({
   imports: [TypeOrmModule.forFeature([NewsEntity])],
   providers: [IngestService, GdeltService],
+  exports: [IngestService],
 })
 export class IngestModule {}

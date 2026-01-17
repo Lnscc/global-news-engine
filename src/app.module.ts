@@ -6,10 +6,13 @@ import { NewsModule } from './modules/news/news.module';
 import { IngestModule } from './modules/ingest/ingest.module';
 import { EnrichModule } from './modules/enrich/enrich.module';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
+import { PipelineModule } from './modules/pipeline/pipeline.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -28,6 +31,7 @@ import { HttpModule } from '@nestjs/axios';
     NewsModule,
     IngestModule,
     EnrichModule,
+    PipelineModule,
   ],
 })
 export class AppModule {}
