@@ -1,39 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { NewsEntity } from '../news/news.entity';
 import { GdeltService } from './sources/gdelt.service';
-import { GdeltArticle } from './sources/gdelt.types';
+import { RawEvent } from './types/raw-event';
 
 @Injectable()
 export class IngestService {
-  constructor(
-    @InjectRepository(NewsEntity)
-    private readonly newsRepo: Repository<NewsEntity>,
-    private readonly gdeltService: GdeltService,
-  ) {}
+  private readonly logger = new Logger(IngestService.name);
 
-  async ingestGdelt() {
-    const articles: GdeltArticle[] = await this.gdeltService.fetchLatest();
+  constructor(private readonly gdeltService: GdeltService) {}
 
-    for (const item of articles) {
-      const exists = await this.newsRepo.findOne({
-        where: { url: item.url },
-      });
+  async fetch(): Promise<RawEvent[]> {
+    this.logger.log('Fetching GDELT articles');
 
-      if (exists) continue;
+    const articles = await this.gdeltService.fetchLatest();
 
-      await this.newsRepo.save({
-        title: item.title,
-        description: '',
-        source: 'gdelt',
-        url: item.url,
-        publishedAt: DateTime.fromISO(item.seendate, {
-          zone: 'utc',
-        }).toJSDate(),
-        importance: 0.5,
-      });
-    }
+    return articles.map((article) => ({
+      source: 'gdelt',
+      sourceId: article.url,
+      title: article.title,
+      url: article.url,
+      publishedAt: DateTime.fromISO(article.seendate, {
+        zone: 'utc',
+      }).toJSDate(),
+      rawPayload: article,
+    }));
   }
 }

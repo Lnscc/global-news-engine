@@ -15,10 +15,7 @@ export class GdeltService {
       `&maxrecords=50` +
       `&timespan=1day`;
 
-    console.log(url);
-
     const { data } = await axios.get<GdeltApiResponse>(url);
-    console.log(data);
     return data.articles;
   }
 }

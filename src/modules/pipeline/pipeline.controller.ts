@@ -3,15 +3,10 @@ import { PipelineService } from './pipeline.service';
 
 @Controller('pipeline')
 export class PipelineController {
-  constructor(private readonly pipeline: PipelineService) {}
+  constructor(private readonly pipelineService: PipelineService) {}
 
-  @Post('ingest')
-  ingest() {
-    return this.pipeline.ingestJob();
-  }
-
-  @Post('enrich')
-  enrich() {
-    return this.pipeline.enrichmentJob();
+  @Post('run')
+  async run(): Promise<void> {
+    await this.pipelineService.run();
   }
 }

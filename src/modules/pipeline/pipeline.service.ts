@@ -1,36 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { IngestService } from '../ingest/ingest.service';
 import { EnrichService } from '../enrich/enrich.service';
+import { NewsService } from '../news/news.service';
 
 @Injectable()
 export class PipelineService {
   private readonly logger = new Logger(PipelineService.name);
 
   constructor(
-    private readonly ingest: IngestService,
-    private readonly enrich: EnrichService,
+    private readonly ingestService: IngestService,
+    private readonly enrichService: EnrichService,
+    private readonly newsService: NewsService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async ingestJob() {
-    this.logger.log('Starting ingest job');
+  async run(): Promise<void> {
+    this.logger.log('Pipeline started');
 
-    try {
-      await this.ingest.ingestGdelt();
-    } catch (err) {
-      this.logger.error('Ingest job failed', err);
-    }
-  }
+    const rawEvents = await this.ingestService.fetch();
+    this.logger.log(`Fetched ${rawEvents.length} raw events`);
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
-  async enrichmentJob() {
-    this.logger.log('Starting enrichment job');
+    const enriched = await this.enrichService.enrich(rawEvents);
+    this.logger.log(`Enriched ${enriched.length} events`);
 
-    try {
-      await this.enrich.enrichUnlocatedNews(10);
-    } catch (err) {
-      this.logger.error('Enrichment job failed', err);
-    }
+    const saved = await this.newsService.createFromEnriched(enriched);
+    this.logger.log(`Persisted ${saved.length} news items`);
+
+    this.logger.log('Pipeline finished');
   }
 }

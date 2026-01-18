@@ -8,6 +8,7 @@ import { EnrichModule } from './modules/enrich/enrich.module';
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PipelineModule } from './modules/pipeline/pipeline.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PipelineModule } from './modules/pipeline/pipeline.module';
     IngestModule,
     EnrichModule,
     PipelineModule,
+    JobsModule,
   ],
 })
 export class AppModule {}

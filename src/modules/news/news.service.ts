@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NewsEntity } from './news.entity';
+import { EnrichedNewsCandidate } from '../enrich/types/enriched-news-candidate';
 
 @Injectable()
 export class NewsService {
@@ -9,6 +10,35 @@ export class NewsService {
     @InjectRepository(NewsEntity)
     private readonly repo: Repository<NewsEntity>,
   ) {}
+
+  async createFromEnriched(
+    enriched: EnrichedNewsCandidate[],
+  ): Promise<NewsEntity[]> {
+    const saved: NewsEntity[] = [];
+
+    for (const item of enriched) {
+      const exists = await this.repo.findOne({
+        where: { url: item.url },
+      });
+
+      if (exists) continue;
+
+      const entity = this.repo.create({
+        title: item.title,
+        description: item.description,
+        source: item.source,
+        url: item.url,
+        publishedAt: item.publishedAt,
+        location: item.location,
+        country: item.country,
+        region: item.region,
+      });
+
+      saved.push(await this.repo.save(entity));
+    }
+
+    return saved;
+  }
 
   async findForMap(params: {
     west: number;
