@@ -4,4 +4,5 @@ export class NewsMapDto {
   coordinates?: [number, number];
   importance: number;
   category?: string;
+  location?: string;
 }

@@ -6,9 +6,11 @@ import { PipelineService } from 'src/modules/pipeline/pipeline.service';
 export class JobsService {
   private readonly logger = new Logger(JobsService.name);
 
-  constructor(private readonly pipelineService: PipelineService) {}
+  constructor(private readonly pipelineService: PipelineService) {
+    this.ingestJob();
+  }
 
-  @Cron('0 */15 * * * *')
+  @Cron('0 * * * *')
   async ingestJob(): Promise<void> {
     this.logger.log('Cron job triggered: ingest pipeline');
     await this.pipelineService.run();

@@ -83,4 +83,27 @@ export class NewsService {
     if (zoom <= 4) return Math.min(limit, 50);
     return limit;
   }
+
+  async findAll(params?: {
+    limit?: number;
+    category?: string;
+    withLocation?: boolean;
+  }) {
+    const { limit = 100, category, withLocation = false } = params ?? {};
+
+    const qb = this.repo
+      .createQueryBuilder('news')
+      .orderBy('news.publishedAt', 'DESC')
+      .limit(limit);
+
+    if (category) {
+      qb.andWhere('news.category = :category', { category });
+    }
+
+    if (withLocation) {
+      qb.andWhere('news.location IS NOT NULL');
+    }
+
+    return qb.getMany();
+  }
 }
