@@ -7,7 +7,24 @@ export interface ExtractedLocation {
   confidence: number;
 }
 
-export class GptLocationExtractor {
+export type ImportanceLabel =
+  | 'very_low'
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'very_high';
+
+export interface ExtractedImportance {
+  score: number;
+  label: ImportanceLabel;
+}
+
+export interface ExtractionResult {
+  locations: ExtractedLocation[];
+  importance: ExtractedImportance | null;
+}
+
+export class GptExtractor {
   private client: OpenAI;
   private model: string;
 
@@ -16,7 +33,7 @@ export class GptLocationExtractor {
     this.model = model;
   }
 
-  async extract(text: string): Promise<ExtractedLocation[]> {
+  async extract(text: string): Promise<ExtractionResult> {
     const prompt = LOCATION_EXTRACTION_PROMPT.replace('{{TEXT}}', text);
 
     const response = await this.client.chat.completions.create({
@@ -32,13 +49,25 @@ export class GptLocationExtractor {
 
     const raw = response.choices[0].message.content;
 
-    if (!raw) return [];
+    if (!raw) {
+      return {
+        locations: [],
+        importance: null,
+      };
+    }
 
     try {
-      const parsed = JSON.parse(raw) as { locations?: ExtractedLocation[] };
-      return parsed.locations ?? [];
+      const parsed = JSON.parse(raw) as Partial<ExtractionResult>;
+
+      return {
+        locations: parsed.locations ?? [],
+        importance: parsed.importance ?? null,
+      };
     } catch {
-      return [];
+      return {
+        locations: [],
+        importance: null,
+      };
     }
   }
 }

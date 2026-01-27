@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { GptLocationExtractor } from './gpt/location-extractor';
+import { GptExtractor } from './gpt/location-extractor';
 import { NominatimService } from './geocoding/nominatim.service';
 import { LocationEnrichment } from './types/location-enrichment';
 
 @Injectable()
 export class LocationEnricher {
   constructor(
-    private readonly extractor: GptLocationExtractor,
+    private readonly extractor: GptExtractor,
     private readonly nominatim: NominatimService,
   ) {}
 
@@ -16,10 +16,12 @@ export class LocationEnricher {
   ): Promise<LocationEnrichment | null> {
     const text = [title, description].filter(Boolean).join('\n');
 
-    const locations = await this.extractor.extract(text);
-    if (!locations || locations.length === 0) return null;
+    const result = await this.extractor.extract(text);
+    if (!result || result.locations.length === 0) return null;
 
-    const candidate = locations.sort((a, b) => b.confidence - a.confidence)[0];
+    const candidate = result.locations.sort(
+      (a, b) => b.confidence - a.confidence,
+    )[0];
 
     if (candidate.confidence < 0.8) return null;
 
@@ -38,6 +40,7 @@ export class LocationEnricher {
       },
       country: candidate.country ?? undefined,
       region: candidate.name,
+      importance: result.importance ?? undefined,
     };
   }
 }

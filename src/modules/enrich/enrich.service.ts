@@ -19,6 +19,7 @@ export class EnrichService {
         country: location?.country,
         region: location?.region,
         locationConfidence: location?.confidence,
+        importance: location?.importance,
       });
     }
 

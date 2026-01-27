@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnrichService } from './enrich.service';
 import { LocationEnricher } from './location-enricher';
-import { GptLocationExtractor } from './gpt/location-extractor';
+import { GptExtractor } from './gpt/location-extractor';
 import { NominatimService } from './geocoding/nominatim.service';
 import { HttpModule } from '@nestjs/axios';
 
@@ -10,10 +10,10 @@ import { HttpModule } from '@nestjs/axios';
   imports: [HttpModule],
   providers: [
     {
-      provide: GptLocationExtractor,
+      provide: GptExtractor,
       inject: [ConfigService],
       useFactory: (config: ConfigService) =>
-        new GptLocationExtractor(
+        new GptExtractor(
           config.get<string>('OPENAI_API_KEY')!,
           config.get<string>('OPENAI_MODEL') || 'gpt-4o-mini',
         ),

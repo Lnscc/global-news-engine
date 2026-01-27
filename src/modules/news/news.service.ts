@@ -32,6 +32,7 @@ export class NewsService {
         location: item.location,
         country: item.country,
         region: item.region,
+        importance: item.importance ? item.importance.score : 0,
       });
 
       saved.push(await this.repo.save(entity));

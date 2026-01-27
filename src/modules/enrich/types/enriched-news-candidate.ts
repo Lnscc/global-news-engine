@@ -1,3 +1,5 @@
+import { ExtractedImportance } from '../gpt/location-extractor';
+
 export interface EnrichedNewsCandidate {
   source: string;
   sourceId: string;
@@ -13,4 +15,6 @@ export interface EnrichedNewsCandidate {
   country?: string;
   region?: string;
   locationConfidence?: number;
+
+  importance?: ExtractedImportance;
 }
